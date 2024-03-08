@@ -1,7 +1,12 @@
 
 const {kurslar,egitmenler} = require('../ornekVeri')
+const Kurs = require('../models/Kurs')
+const Egitmen = require('../models/Egitmen')
+
 
 const {GraphQLObjectType, GraphQLID, GraphQLString, GraphQLSchema, GraphQLList} = require("graphql")
+
+//#region types
 
 const EgitmenType = new GraphQLObjectType({
     name: 'Egitmen',
@@ -22,11 +27,15 @@ const KursType = new GraphQLObjectType({
         egitmen: {
             type:EgitmenType,
             resolve(parent,args){
-                return egitmenler.find(egitmen => egitmen.id===parent.egitmenId)
+                return Egitmen.findBydId(parent.id)
             }
         },
     })
 })
+
+//#endregion
+
+//#region RootQuery
 
 const RootQuery = new GraphQLObjectType({
     name: 'RootQueryType',
@@ -35,31 +44,33 @@ const RootQuery = new GraphQLObjectType({
             type: EgitmenType,
             args:{id:{type:GraphQLID}},
             resolve(parent, args){
-                return egitmenler.find(egitmen=>egitmen.id===args.id)
+                return Egitmen.findById(args.id)
             }
         },
         egitmenler: {
             type: new GraphQLList(EgitmenType),
             resolve(parent,args){
-                return egitmenler
+                return Egitmen.find()
             }
         },
         kurs: {
             type:KursType,
             args: {id:{type:GraphQLID}},
             resolve(parent,args){
-                return kurslar.find(kurs =>kurs.id===args.id)
+                return Kurs.findById(args.id)
             }
         },
         kurslar: {
             type: new GraphQLList(KursType),
             args: {id:{type:GraphQLID}},
             resolve(parent,args){
-                return kurslar
+                return Kurs.find()
             }
         }
     }
 })
+
+//#endregion
 
 module.exports = new GraphQLSchema({
     query: RootQuery
