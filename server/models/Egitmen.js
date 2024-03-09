@@ -6,6 +6,7 @@ const EgitmenSchema = new mongoose.Schema({
     isim:{
         type: String
     },
+
     email:{
         type:String
     }
